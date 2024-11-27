@@ -16,7 +16,7 @@ import (
 
 const (
 	timeout     = 10 * time.Second
-	datePattern = "02.01.2006"
+	maxFileSize = 128
 )
 
 // Mock для симуляции похода в апи с деталями песни
@@ -49,9 +49,9 @@ func NewServer(cfg *config.Config, storage *database.Postgres) *Server {
 		externalStorageURL: cfg.HelperApi,
 		client:             http.Client{Timeout: timeout},
 	}
-	srv.server.Handler = srv.catcher(http.DefaultServeMux)
+	srv.server.Handler = srv.catcher(http.MaxBytesHandler(http.DefaultServeMux, maxFileSize))
 
-	getDetails = srv.getDetailsFromApi //Для тестов: srv.mockGetDetails
+	getDetails = srv.mockGetDetails //Для тестов: srv.mockGetDetails
 
 	http.HandleFunc("GET /api/ping/", srv.ping)
 
