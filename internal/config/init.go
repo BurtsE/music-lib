@@ -3,7 +3,6 @@ package config
 import (
 	"encoding/json"
 	"github.com/caarlos0/env"
-	"log"
 	"os"
 )
 
@@ -21,6 +20,5 @@ func NewConfig() (*Config, error) {
 	if err = env.Parse(&cfg); err != nil {
 		return nil, err
 	}
-	log.Println(cfg)
 	return &cfg, nil
 }
