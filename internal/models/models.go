@@ -1,9 +1,13 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type Song struct {
-	Group       string
+	ID          uint `gorm:"type:serial;primaryKey;"`
+	Name        string
+	GroupName   string
 	Text        string
 	Link        string
 	ReleaseDate time.Time

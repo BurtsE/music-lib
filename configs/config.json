@@ -1,0 +1,10 @@
+{
+  "postgres": {
+    "max_conns": 1,
+    "sslmode": "disable"
+  },
+  "service": {
+  },
+  "host": {
+  }
+}

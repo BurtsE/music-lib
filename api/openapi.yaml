@@ -1,0 +1,228 @@
+openapi: 3.0.0
+info:
+  title: music-library
+  description: The API for service
+  version: 1.0.0
+servers:
+  - url: https://virtserver.swaggerhub.com/BURCEVEGOR/music-library/1.0.0
+    description: SwaggerHub API Auto Mocking
+paths:
+  /api/ping:
+    get:
+      tags:
+        - Service
+      description: Статус работы сервиса
+      responses:
+        '200':
+          description: Сервис запущен
+          content:
+            plain/text:
+              schema:
+                type: string
+                example: pong
+        '404':
+          description: Сервис недоступен
+  /api/songs/list:
+    get:
+      tags:
+        - Song
+      description: Получение одной страницы списка песен
+      parameters:
+        - in: query
+          name: group
+          schema:
+            type: string
+          description: Шаблон для фильтрации по названию группы
+        - in: query
+          name: name
+          schema:
+            type: string
+          description: Шаблон для фильтрации по имени песни
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Номер страницы для поиска
+      responses:
+        '200':
+          description: Список песен
+          content:
+            object:
+              schema:
+                $ref: '#/components/schemas/SongList'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            plain/text:
+              example: unable to get songs
+  /api/songs/text/{song_id}:
+    get:
+      tags:
+        - Song
+      description: Получение текста песни
+      parameters:
+        - in: path
+          name: song_id
+          required: true
+          schema:
+            $ref: '#/components/schemas/song_id'
+      responses:
+        '200':
+          description: Список песен
+          content:
+            object:
+              schema:
+                $ref: '#/components/schemas/SongVerses'
+        '400':
+          description: Неверно указан идентификатор
+          content:
+            plain/text:
+              example: invalid song id
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            plain/text:
+              example: unable to get songs
+  /api/songs/upload:
+    post:
+      tags:
+        - Song
+      description: Загрузка новой песни
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SongParams'
+      responses:
+        '200':
+          description: Список песен
+          content:
+            content:
+              schema:
+                $ref: '#/components/schemas/Song'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            plain/text:
+              example: could not create song
+  /api/songs/update/{song_id}:
+    patch:
+      tags:
+        - Song
+      description: Загрузка новой песни
+      parameters:
+        - in: path
+          name: song_id
+          required: true
+          schema:
+            $ref: '#/components/schemas/song_id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SongParams'
+      responses:
+        '200':
+          description: Песня обновлена
+          content:
+            content:
+              schema:
+                $ref: '#/components/schemas/Song'
+        '400':
+          description: Неверно указан идентификатор
+          content:
+            plain/text:
+              example: invalid song id
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            plain/text:
+              example: could not update song
+  /api/songs/delete/{song_id}:
+    delete:
+      tags:
+        - Song
+      description: Удаление песни по идентификатору
+      parameters:
+        - in: path
+          name: song_id
+          required: true
+          schema:
+            $ref: '#/components/schemas/song_id'
+      responses:
+        '200':
+          description: Песня успешно удалена
+        '400':
+          description: Неверно указан идентификатор
+          content:
+            plain/text:
+              example: invalid song id
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            plain/text:
+              example: could not update song
+components:
+  schemas:
+    Song:
+      type: object
+      properties:
+        ID:
+          type: integer
+          format: int32
+          description: The unique identifier of the song.
+        Name:
+          type: string
+          description: The name of the song.
+        GroupName:
+          type: string
+          description: The name of the group or artist associated with the song.
+        Text:
+          type: string
+          description: The full lyrics or textual content of the song.
+        Link:
+          type: string
+          format: uri
+          description: A link to additional song information or media.
+        ReleaseDate:
+          type: string
+          format: date-time
+          description: The release date of the song. Defaults to an unspecified date.
+      required:
+        - ID
+        - Name
+        - GroupName
+        - Text
+        - Link
+    SongList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Song'
+    Verse:
+      type: string
+      example: Tell me that I'm special, tell me I look pretty\nTell me I'm a little angel, sweetheart of your city\nSay what I'm dying to hear\n'Cause I'm dying to hear you\n\n
+    SongParams:
+      type: object
+      properties:
+        group:
+          type: string
+          description: The name of the group or artist associated with the song.
+        name:
+          type: string
+          description: The name of the song.
+      required:
+        - name
+        - group
+    SongVerses:
+      type: object
+      properties:
+        verse_1:
+          $ref: '#/components/schemas/Verse'
+        verse_2:
+          $ref: '#/components/schemas/Verse'
+    song_id:
+      type: integer
+      minimum: 1
+      description: Уникальный идентификатор песни
