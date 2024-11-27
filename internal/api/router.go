@@ -51,7 +51,7 @@ func NewServer(cfg *config.Config, storage *database.Postgres) *Server {
 	}
 	srv.server.Handler = srv.catcher(http.MaxBytesHandler(http.DefaultServeMux, maxFileSize))
 
-	getDetails = srv.mockGetDetails //Для тестов: srv.mockGetDetails
+	getDetails = srv.getDetailsFromApi //Для тестов: srv.mockGetDetails
 
 	http.HandleFunc("GET /api/ping/", srv.ping)
 
